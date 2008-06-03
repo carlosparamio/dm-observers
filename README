@@ -1,0 +1,94 @@
+This is a DataMapper plugin that provides observers for DataMapper model
+classes.
+
+== Setup
+DataMapper observer capabilities are automatically available when you
+'require dm-observers' into your application.
+
+== Basic Usage
+
+  require 'dm-observers'
+
+  DataMapper.setup(:default, 'sqlite3::memory:')
+
+  class MyModel
+    include DataMapper::Resource
+    include DataMapper::Observers::Observable
+    property :id, Integer, :key => true
+  end
+
+  class MyObserver < DataMapper::Observers::Observer
+    def before_save(object)
+      puts "Before save..."
+      # ...
+    end
+  
+    def after_save(object)
+      puts "After save..."
+      # ...
+    end
+  
+    # ...
+  end
+
+  MyModel.add_observer(MyObserver.instance)
+
+
+---- output ----
+Before save...
+After save...
+---- output ----
+
+
+The following are predefined hooks that are automatically called on the observers
+before or after each model CRUD operation, if they are defined:
+
+before_save, after_save, before_create, after_create, before_update, after_update,
+before_destroy, after_destroy
+
+
+== Observers for DataMapper Resources
+
+The observers defined for DataMapper Resources can be automatically added to the model,
+if the observer class name is prefixed with the name of the model to observe, and suffixed
+with 'Observer'. Example:
+
+  class MyModel
+    # ...
+  end
+
+  class MyModelObserver
+    # ...
+  end
+
+  MyModelObserver.instance # The observer is automatically added to the MyModel class.
+
+
+You can include all the observers instanciations at some bootstrap block of your project.
+
+
+== Custom messages to the observer
+
+Additionally to the default hooks called on the observers, you can send a custom message
+to them using the notify_observers method:
+
+  class MyModel
+    include DataMapper::Resource
+    include DataMapper::Observers::Observable
+    property :id, Integer, :key => true
+  
+    def do_something
+      # ...
+      MyModel.notify_observers(:purge_old_data, self)
+    end
+  end
+
+  class MyModelObserver < DataMapper::Observers::Observer
+    def purge_old_data(object)
+      puts "Purge Old Data..."
+      # ...
+    end
+  end
+
+  MyModelObserver.instance
+  MyModel.new.do_something
