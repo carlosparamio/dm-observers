@@ -33,6 +33,7 @@ DataMapper observer capabilities are automatically available when you
 
   MyModel.add_observer(MyObserver.instance)
 
+  MyModel.new.save
 
 ---- output ----
 Before save...
@@ -40,7 +41,7 @@ After save...
 ---- output ----
 
 
-The following are predefined hooks that are automatically called on the observers
+The following are the hooks that are automatically called on the observers
 before or after each model CRUD operation, if they are defined:
 
 before_save, after_save, before_create, after_create, before_update, after_update,
