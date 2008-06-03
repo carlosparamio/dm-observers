@@ -1,5 +1,5 @@
-This is a DataMapper plugin that provides observers for DataMapper model
-classes.
+This is a DataMapper plugin that provides observers for DataMapper resource
+classes. It's compatible with DataMapper 0.9.1
 
 == Setup
 DataMapper observer capabilities are automatically available when you
