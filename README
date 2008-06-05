@@ -15,37 +15,65 @@ DataMapper observer capabilities are automatically available when you
     include DataMapper::Resource
     include DataMapper::Observers::Observable
     property :id, Integer, :key => true
+    
+    def my_instance_method
+      puts "my_instance_method called"
+    end
   end
 
   class MyObserver < DataMapper::Observers::Observer
-    def before_save(object)
-      puts "Before save..."
+    
+    before :save do
+      puts "before :save block..."
+    end
+    
+    after :destroy do
+      puts "after :destroy block..."
+    end
+    
+    before :my_instance_method do
+      puts "before :my_instance_method block..."
       # ...
     end
-  
-    def after_save(object)
-      puts "After save..."
-      # ...
+    
+    before :my_instance_method do |object|
+      puts "before :my_instance_method block with object parameter #{object.inspect}..."
+      #...
     end
-  
+    
     # ...
   end
 
-  MyModel.add_observer(MyObserver.instance)
+  MyObserver.instance.observed_class = MyModel
 
-  MyModel.new.save
+  MyModel.auto_migrate!
+  object = MyModel.new
+  
+  object.my_instance_method
+  ---- output ----
+  before :my_instance_method block...
+  before :my_instance_method block with object parameter #<MyModel id=nil>...
+  my_instance_method called
+  ---- output ----
+  
+  object.save
+  ---- output ----
+  before :save block...
+  ---- output ----
 
----- output ----
-Before save...
-After save...
----- output ----
+  object.destroy
+  ---- output ----
+  after :destroy block...
+  ---- output ----
 
 
-The following are the hooks that are automatically called on the observers
-before or after each model CRUD operation, if they are defined:
+The methods "before" and "after" take a target method parameter -- the name of the method at
+the model to observe -- and a block -- the code to execute before/after the target method is
+executed. The syntax is pretty similar to model hooks, just that it doesn't support class methods
+or method symbols yet.
 
-before_save, after_save, before_create, after_create, before_update, after_update,
-before_destroy, after_destroy
+The block supports a parameter, that will be filled with the object instance that sent the
+update notification to the observers.
 
 
 == Observers for DataMapper Resources
@@ -93,3 +121,6 @@ to them using the notify_observers method:
 
   MyModelObserver.instance
   MyModel.new.do_something
+  ---- output ----
+  Purge Old Data...
+  ---- output ----

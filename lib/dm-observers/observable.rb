@@ -4,19 +4,11 @@ module DataMapper
       def self.included(base)
         base.instance_variable_set("@observers", [])
         base.extend ClassMethods
-        [:save, :create, :update, :destroy].each do |action|
-          base.before action do
-            base.notify_observers("before_#{action}", self)
-          end
-          base.after action do
-            base.notify_observers("after_#{action}", self)
-          end
-        end
       end
     
       module ClassMethods
         def add_observer(observer)
-          @observers << observer
+          @observers << observer unless @observers.include?(observer)
         end
       
         def delete_observer(observer)

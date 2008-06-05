@@ -28,15 +28,37 @@ describe DataMapper::Observers::Observer do
       property :id, Integer, :key => true
     end
     
-    class MyModelObserver < DataMapper::Observers::Observer
+    class MyModelObserver  < DataMapper::Observers::Observer
+      before :save do |object|
+        puts "before :save with object #{object.inspect}"
+      end
+      
+      before :save do
+        puts "before :save"
+      end
+      
+      after :save do
+        puts "after :save"
+      end
+      
+      def before_save(object)
+        puts "before_save with object #{object.inspect}"
+      end
     end
+    class MyCustomObserver < DataMapper::Observers::Observer; end
   end
   
-  it "should be a singleton class" do
-    MyModelObserver.should be_a_singleton_class
+  it "should work" do
+    MyModelObserver.instance
+    MyModel.new.save
   end
   
-  it "should be added to the observed model automatically" do
-    MyModel.should_receive(:add_observer).with(MyModelObserver.instance).once
-  end
+  it "should attach a hook to the observed class for each before block"
+  
+  it "should attach a hook to the observed class for each after block"
+  
+  it "should attach a hook to the observed class for each before_class_method block"
+  
+  it "should attach a hook to the observed class for each after_class_method block"
+
 end

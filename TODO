@@ -1,1 +1,2 @@
-- Fill the TODO ;-)
+* Add support to observe class methods
+* Add more specs for observer blocks definitions and observable notifications
