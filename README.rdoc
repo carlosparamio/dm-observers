@@ -124,3 +124,9 @@ to them using the notify_observers method:
   ---- output ----
   Purge Old Data...
   ---- output ----
+  
+== Credits
+
+Carlos Paramio
+
+http://h1labs.com
